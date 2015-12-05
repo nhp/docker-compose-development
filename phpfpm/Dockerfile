@@ -16,14 +16,22 @@ RUN apt-get update && apt-get install -y \
         libxml2-dev \
         libicu-dev \
         libxslt-dev \
-        git vim \
-    && docker-php-ext-install mcrypt mysqlnd pdo_mysql mbstring ftp soap zip opcache \
+        wget git vim \
+    && docker-php-ext-install mcrypt pdo_mysql mysqli mbstring ftp soap zip \
     && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
     && docker-php-ext-install gd \
-    && rm -rf /var/lib/apt/lists/* \
-    && pecl install xdebug \
-    && rm -rf /tmp/pear \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN wget http://xdebug.org/files/xdebug-2.4.0rc2.tgz \
+    && tar -xvzf xdebug-2.4.0rc2.tgz \
+    && cd xdebug-2.4.0* \
+    && phpize \
+    && ./configure \
+    && make \
+    && cp modules/xdebug.so /usr/local/lib/php/extensions/no-debug-non-zts-20151012 \
+    && cd && rm -rf xdebug-2.4.0rc2 \
     && echo "zend_extension=/usr/local/lib/php/extensions/no-debug-non-zts-20151012/xdebug.so" > /usr/local/etc/php/conf.d/xdebug.ini
+
 
 COPY etc/php-fpm.conf /usr/local/etc/
 COPY etc/php.ini /usr/local/etc/php/
