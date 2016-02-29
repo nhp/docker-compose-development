@@ -22,6 +22,10 @@ RUN apt-get update && apt-get install -y \
     && docker-php-ext-install gd \
     && rm -rf /var/lib/apt/lists/*
 
+# Install xdebug
+RUN pecl install xdebug \
+    && echo 'zend_extension=/usr/local/lib/php/extensions/no-debug-non-zts-20131226/xdebug.so' > $PHP_INI_DIR/conf.d/xdebug.ini
+
 # Install blackfire agent
 RUN export VERSION=`php -r "echo PHP_MAJOR_VERSION.PHP_MINOR_VERSION;"` \
     && curl -A "Docker" -o /tmp/blackfire-probe.tar.gz -D - -L -s https://blackfire.io/api/v1/releases/probe/php/linux/amd64/${VERSION} \
